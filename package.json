@@ -1,0 +1,85 @@
+{
+  "name": "picture-dictionary",
+  "version": "1.0.0",
+  "private": true,
+  "author": "ZHIPING XU",
+  "description": "本地图解词典阅读器：OCR 点读、中英讲解、语义检索",
+  "main": "./out/main/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "dist": "electron-vite build && electron-builder --mac dmg --arm64",
+    "preview": "electron-vite preview",
+    "typecheck": "tsc -p tsconfig.node.json --noEmit && tsc -p tsconfig.web.json --noEmit"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@vitejs/plugin-react": "4.7.0",
+    "electron": "^44.7.0",
+    "electron-builder": "^26.0.12",
+    "electron-vite": "5.0.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
+  },
+  "build": {
+    "appId": "com.bennix.oxfordvisualdict",
+    "productName": "图解词典",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "out/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "resources/icon.png",
+        "to": "icon.png"
+      },
+      {
+        "from": "resources/tts_server.py",
+        "to": "tts_server.py"
+      },
+      {
+        "from": "resources/cosyvoice/python",
+        "to": "cosyvoice/python",
+        "filter": ["**/*", "!**/__pycache__/**", "!**/joblib/test/**"]
+      },
+      {
+        "from": "resources/cosyvoice/repo",
+        "to": "cosyvoice/repo",
+        "filter": ["**/*", "!**/.git/**", "!**/Matcha-TTS/data"]
+      }
+    ],
+    "mac": {
+      "icon": "build/icon.icns",
+      "category": "public.app-category.education",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "identity": "ZHIPING XU (5N66S29EK2)",
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "notarize": true,
+      "sign": "build/sign-mac.cjs",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ]
+    },
+    "dmg": {
+      "artifactName": "OxfordVisualDict-${version}-${arch}.${ext}"
+    }
+  },
+  "dependencies": {
+    "pdfjs-dist": "^6.4.299",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
+  }
+}

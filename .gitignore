@@ -1,0 +1,19 @@
+node_modules
+out
+release
+dist
+.memsearch
+*.tsbuildinfo
+.ocr*
+.tess*
+.p40*
+.p100*
+.p125*
+.ptoc*
+*.tsv
+.DS_Store
+resources/cosyvoice/python/
+resources/cosyvoice/models/
+resources/cosyvoice/repo/.git/
+resources/dictionary.pdf
+oxford Picture dictionary.pdf
