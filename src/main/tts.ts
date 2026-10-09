@@ -3,6 +3,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import type { TtsStatus } from '../shared/types'
 import { bundledVoice, ensureDir, ttsScriptPath, userModelDir, userRoot, type VoiceVersion } from './paths'
+import { speakEdge } from './edgeTts'
 import { getRuntimeConfig } from './store'
 
 let child: ChildProcess | null = null
@@ -232,6 +233,10 @@ export async function stopTts(): Promise<TtsStatus> {
 export async function speak(text: string): Promise<{ engine: string; audioBase64: string; mime: string }> {
   const spoken = text.trim().slice(0, 500)
   if (!spoken) throw new Error('没有可朗读的文字')
+  if (getRuntimeConfig().speechEngine === 'edge') {
+    const audio = await speakEdge(spoken)
+    return { engine: 'edge', audioBase64: audio.toString('base64'), mime: 'audio/wav' }
+  }
   const voice = voiceConfig()
   if (!voice.bundledReady) throw new Error('CosyVoice 权重不完整，已停止使用系统语音')
   if (loadedVersion !== voice.version || !(await health())?.ok) await startTts()

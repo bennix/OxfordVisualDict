@@ -264,9 +264,11 @@ app.whenReady().then(() => {
   applyDockIcon()
   registerIpc()
   createWindow()
-  void startTts().catch((error: unknown) => {
-    console.error('CosyVoice', error instanceof Error ? error.message : error)
-  })
+  if (getRuntimeConfig().speechEngine !== 'edge') {
+    void startTts().catch((error: unknown) => {
+      console.error('CosyVoice', error instanceof Error ? error.message : error)
+    })
+  }
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })

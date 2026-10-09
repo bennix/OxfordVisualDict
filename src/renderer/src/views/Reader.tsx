@@ -60,10 +60,16 @@ export function Reader({ page, setPage, pageCount, entry, setEntry, conversation
   }
 
   async function readAloud(text: string): Promise<void> {
-    setVoiceNote('正在用 CosyVoice 合成，第一次要先加载模型')
+    setVoiceNote('正在合成…')
     try {
       const spoken = await speakText(text)
-      setVoiceNote(spoken.engine.startsWith('cosyvoice') ? '刚才是 CosyVoice 生成的声音' : spoken.engine)
+      setVoiceNote(
+        spoken.engine === 'edge'
+          ? '刚才是微软 Edge 语音'
+          : spoken.engine.startsWith('cosyvoice')
+            ? '刚才是 CosyVoice 生成的声音'
+            : spoken.engine
+      )
     } catch (reason: unknown) {
       setVoiceNote(reason instanceof Error ? reason.message : String(reason))
     }

@@ -1,6 +1,6 @@
 {
   "name": "picture-dictionary",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "author": "ZHIPING XU",
   "description": "本地图解词典阅读器：OCR 点读、中英讲解、语义检索",

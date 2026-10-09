@@ -87,13 +87,13 @@ export function SettingsView({ settings, onChange, onRebuildOcr }: Props) {
     }
   }
 
-  async function previewEnglish(): Promise<void> {
+  async function previewVoice(sample: string): Promise<void> {
     setError('')
     setVoiceBusy('speak')
-    setVoiceNote('正在合成英文，第一次会先加载模型')
+    setVoiceNote(settings.speechEngine === 'edge' ? '正在用微软 Edge 语音合成' : '正在合成，第一次会先加载本地模型')
     try {
-      const spoken = await speakText('The bus stop is on the corner.')
-      setVoiceNote(`正在播放试听 · ${spoken.engine}`)
+      const spoken = await speakText(sample)
+      setVoiceNote(spoken.engine === 'edge' ? '正在播放微软 Edge 语音' : `正在播放试听 · ${spoken.engine}`)
       setTts(await window.dict.getTtsStatus())
     } catch (reason: unknown) {
       const text = reason instanceof Error ? reason.message : String(reason)
@@ -138,7 +138,7 @@ export function SettingsView({ settings, onChange, onRebuildOcr }: Props) {
     <section className="panel settings">
       <header>
         <p className="eyebrow">设置</p>
-        <h2>ZenMux、嵌入与 CosyVoice</h2>
+        <h2>ZenMux、嵌入与发声</h2>
       </header>
 
       <div className="card">
@@ -224,7 +224,37 @@ export function SettingsView({ settings, onChange, onRebuildOcr }: Props) {
       </div>
 
       <div className="card">
-        <h3>CosyVoice 点读</h3>
+        <h3>发声</h3>
+        <p>点读和讲解都用这里选中的声音。本地 CosyVoice 在本机合成，需要先下载权重。微软 Edge 语音走网络，不用下载模型。</p>
+        <label>
+          发声方式
+          <select
+            value={settings.speechEngine}
+            onChange={(event) =>
+              void window.dict
+                .updateSettings({ speechEngine: event.target.value as PublicSettings['speechEngine'] })
+                .then(onChange)
+            }
+          >
+            <option value="cosyvoice">本地 CosyVoice</option>
+            <option value="edge">微软 Edge 语音</option>
+          </select>
+        </label>
+        {settings.speechEngine === 'edge' ? (
+          <>
+            <p>中文用晓晓，英文用 Aria。需要能访问微软的语音服务。</p>
+            <div className="row-actions voice-actions">
+              <button className="solid" disabled={voiceBusy !== ''} onClick={() => void previewVoice('The bus stop is on the corner.')}>
+                {voiceBusy === 'speak' ? '正在合成…' : '试听英文'}
+              </button>
+              <button className="line" disabled={voiceBusy !== ''} onClick={() => void previewVoice('公共汽车站在拐角处。')}>
+                试听中文
+              </button>
+            </div>
+            {voiceNote && <p className="voice-note">{voiceNote}</p>}
+          </>
+        ) : (
+          <>
         <p>{tts?.detail}</p>
         <p>点「一键下载权重」会把当前版本下载到本机目录。已经下完的文件会跳过，中断后可以再点一次继续。</p>
         <p>
@@ -284,11 +314,13 @@ export function SettingsView({ settings, onChange, onRebuildOcr }: Props) {
           <button className="line" disabled={voiceBusy !== ''} onClick={() => void stopVoice()}>
             {voiceBusy === 'stop' ? '正在停止…' : '停止服务'}
           </button>
-          <button className="solid" disabled={voiceBusy !== ''} onClick={() => void previewEnglish()}>
+          <button className="solid" disabled={voiceBusy !== ''} onClick={() => void previewVoice('The bus stop is on the corner.')}>
             {voiceBusy === 'speak' ? '正在合成…' : '试听英文'}
           </button>
         </div>
         {voiceNote && <p className="voice-note">{voiceNote}</p>}
+          </>
+        )}
       </div>
 
       <div className="card">

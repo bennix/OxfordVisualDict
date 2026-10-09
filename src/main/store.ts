@@ -30,6 +30,7 @@ type PersistedSettings = {
   cosyvoiceModelDir: string
   cosyvoiceVersion: 'cosyvoice2' | 'cosyvoice3'
   cosyvoiceServerUrl: string
+  speechEngine: 'cosyvoice' | 'edge'
 }
 
 function settingsPath(): string {
@@ -52,7 +53,8 @@ function defaults(): PersistedSettings {
     cosyvoiceRepo: '',
     cosyvoiceModelDir: '',
     cosyvoiceVersion: 'cosyvoice3',
-    cosyvoiceServerUrl: 'http://127.0.0.1:8765'
+    cosyvoiceServerUrl: 'http://127.0.0.1:8765',
+    speechEngine: 'cosyvoice'
   }
 }
 
@@ -82,7 +84,8 @@ export function toPublic(settings: PersistedSettings): PublicSettings {
     cosyvoiceRepo: settings.cosyvoiceRepo,
     cosyvoiceModelDir: settings.cosyvoiceModelDir,
     cosyvoiceVersion: settings.cosyvoiceVersion,
-    cosyvoiceServerUrl: settings.cosyvoiceServerUrl
+    cosyvoiceServerUrl: settings.cosyvoiceServerUrl,
+    speechEngine: settings.speechEngine === 'edge' ? 'edge' : 'cosyvoice'
   }
 }
 
@@ -181,6 +184,9 @@ export function updateSettings(patch: Partial<PublicSettings>): PublicSettings {
   }
   if (typeof patch.cosyvoiceServerUrl === 'string' && patch.cosyvoiceServerUrl.trim()) {
     settings.cosyvoiceServerUrl = patch.cosyvoiceServerUrl.trim()
+  }
+  if (patch.speechEngine === 'edge' || patch.speechEngine === 'cosyvoice') {
+    settings.speechEngine = patch.speechEngine
   }
   writeSettings(settings)
   return toPublic(settings)
@@ -453,7 +459,7 @@ function wavData(buffer: Buffer): { rate: number; channels: number; bits: number
       rate = buffer.readUInt32LE(start + 4)
       bits = buffer.readUInt16LE(start + 14)
     } else if (id === 'data') {
-      pcm = buffer.subarray(start, start + size)
+      pcm = Buffer.from(buffer.subarray(start, start + size))
     }
     offset = start + size + (size % 2)
   }

@@ -170,6 +170,7 @@ export type PublicSettings = {
   cosyvoiceModelDir: string
   cosyvoiceVersion: 'cosyvoice2' | 'cosyvoice3'
   cosyvoiceServerUrl: string
+  speechEngine: 'cosyvoice' | 'edge'
 }
 
 export type NextChar = {

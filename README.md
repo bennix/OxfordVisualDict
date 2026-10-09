@@ -17,7 +17,7 @@ npm run dev
 npm run dist
 ```
 
-会用 Developer ID 签名并公证，产物在 `release/OxfordVisualDict-1.0.0-arm64.dmg`。
+会用 Developer ID 签名并公证，产物在 `release/OxfordVisualDict-1.0.1-arm64.dmg`。
 
 公证需要本机钥匙串里的 Developer ID Application 证书，以及环境变量 `APPLE_ID`、`APPLE_APP_SPECIFIC_PASSWORD`、`APPLE_TEAM_ID`。不要把专用密码写进仓库。
 
